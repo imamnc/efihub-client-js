@@ -2,13 +2,20 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { EfihubClientConfig } from "./types";
 
 export class EfihubClient {
-  private config: EfihubClientConfig;
+  private config: Required<EfihubClientConfig>;
   private http: AxiosInstance;
   private accessToken: string | null = null;
   private tokenExpiry: number | null = null;
 
   constructor(config: EfihubClientConfig) {
-    this.config = config;
+    const defaultTokenUrl = "https://efihub.morefurniture.id/oauth/token";
+    const defaultApiBaseUrl = "https://efihub.morefurniture.id/api";
+    this.config = {
+      clientId: config.clientId,
+      clientSecret: config.clientSecret,
+      tokenUrl: config.tokenUrl ?? defaultTokenUrl,
+      apiBaseUrl: config.apiBaseUrl ?? defaultApiBaseUrl,
+    };
     this.http = axios.create({
       baseURL: this.config.apiBaseUrl,
       timeout: 10000,

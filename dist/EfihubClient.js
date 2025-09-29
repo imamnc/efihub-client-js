@@ -9,7 +9,14 @@ class EfihubClient {
     constructor(config) {
         this.accessToken = null;
         this.tokenExpiry = null;
-        this.config = config;
+        const defaultTokenUrl = "https://efihub.morefurniture.id/oauth/token";
+        const defaultApiBaseUrl = "https://efihub.morefurniture.id/api";
+        this.config = {
+            clientId: config.clientId,
+            clientSecret: config.clientSecret,
+            tokenUrl: config.tokenUrl ?? defaultTokenUrl,
+            apiBaseUrl: config.apiBaseUrl ?? defaultApiBaseUrl,
+        };
         this.http = axios_1.default.create({
             baseURL: this.config.apiBaseUrl,
             timeout: 10000,
