@@ -1,5 +1,5 @@
 {
-  "name": "@imamnc/efihub-client",
+  "name": "@kacoon/efihub-client",
   "version": "1.0.0",
   "description": "JavaScript/TypeScript SDK for EFIHUB API using OAuth2 Client Credentials Flow",
   "main": "dist/index.js",
@@ -17,9 +17,9 @@
   "author": "Imam Nurcholis",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.6.3",
     "@types/node": "^20.0.0",
-    "vitest": "^2.0.0"
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "axios": "^1.7.0"
