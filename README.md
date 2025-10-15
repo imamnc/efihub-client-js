@@ -1,3 +1,7 @@
+A prominent logo at the top helps identify the project quickly; add linked logo image.
+
+[![EFIHUB Logo](https://efihub.morefurniture.id/img/logo.png)](https://efihub.morefurniture.id)
+
 # EFIHUB JavaScript/TypeScript Client
 
 A modern SDK to integrate with the EFIHUB platform using the OAuth 2.0 Client Credentials flow.
