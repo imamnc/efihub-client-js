@@ -1,7 +1,7 @@
-[p align="center"]
-<a href="https://efihub.morefurniture.id">
-<img src="https://efihub.morefurniture.id/img/logo.png" alt="EFIHUB" width="180" />
-</a>
+<p align="center">
+  <a href="https://efihub.morefurniture.id">
+  <img src="https://efihub.morefurniture.id/img/logo.png" alt="EFIHUB" width="180" />
+  </a>
 
   <h1 align="center">EFIHUB JavaScript/TypeScript Client</h1>
 
@@ -13,8 +13,7 @@
     <a href="https://www.npmjs.com/package/@kacoon/efihub-client"><img src="https://img.shields.io/npm/v/@kacoon/efihub-client.svg?logo=npm" alt="npm version" /></a>
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license" />
   </p>
-
-[/p]
+</p>
 
 ## Description
 
