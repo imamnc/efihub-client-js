@@ -55,7 +55,7 @@ const client = new EfihubClient({
   // apiBaseUrl?: "https://efihub.morefurniture.id/api",
 });
 
-const { data } = await client.get("/users", { params: { page: 1 } });
+const { data } = await client.get("/user", { params: { page: 1 } });
 console.log(data);
 ```
 
@@ -78,7 +78,7 @@ interface User {
   id: string;
   name: string;
 }
-const res = await client.get<User>("/users/123");
+const res = await client.get<User>("/user/123");
 const user = res.data; // typed as User
 ```
 
@@ -86,7 +86,7 @@ const user = res.data; // typed as User
 
 Do not use this SDK in client components. Keep credentials on the server.
 
-App Router (app/api/users/route.ts):
+App Router (app/api/user/route.ts):
 
 ```ts
 import { NextResponse } from "next/server";
@@ -97,12 +97,12 @@ export async function GET() {
     clientId: process.env.EFIHUB_CLIENT_ID!,
     clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
   });
-  const res = await client.get("/users", { params: { page: 1 } });
+  const res = await client.get("/user", { params: { page: 1 } });
   return NextResponse.json(res.data);
 }
 ```
 
-Pages Router (pages/api/users.ts):
+Pages Router (pages/api/user.ts):
 
 ```ts
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -116,7 +116,7 @@ export default async function handler(
     clientId: process.env.EFIHUB_CLIENT_ID!,
     clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
   });
-  const out = await client.get("/users");
+  const out = await client.get("/user");
   res.status(200).json(out.data);
 }
 ```
@@ -125,7 +125,7 @@ export default async function handler(
 
 Create a server API route. Do not call the SDK directly from Vue components.
 
-server/api/users.get.ts:
+server/api/user.get.ts:
 
 ```ts
 import { EfihubClient } from "@kacoon/efihub-client";
@@ -135,7 +135,7 @@ export default defineEventHandler(async () => {
     clientId: process.env.EFIHUB_CLIENT_ID!,
     clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
   });
-  const res = await client.get("/users");
+  const res = await client.get("/user");
   return res.data;
 });
 ```
@@ -146,7 +146,7 @@ Do not bundle this SDK in the browser. Instead, call your own backend endpoint:
 
 ```ts
 // React/Vue component (browser)
-const resp = await fetch("/api/users");
+const resp = await fetch("/api/user");
 const users = await resp.json();
 ```
 
@@ -221,7 +221,7 @@ const client = new EfihubClient({
 });
 
 async function main() {
-  const res = await client.get("/users", { params: { page: 1 } });
+  const res = await client.get("/user", { params: { page: 1 } });
   console.log(res.data);
 }
 
@@ -258,7 +258,7 @@ Examples:
 
 ```ts
 // Query params
-await client.get("/users", { params: { page: 2, per_page: 20 } });
+await client.get("/user", { params: { page: 2, per_page: 20 } });
 
 // POST JSON body
 await client.post("/orders", { sku: "ABC", qty: 2 });
@@ -281,7 +281,7 @@ Requests can throw Axios errors. Use `try/catch` to handle failures and inspect 
 
 ```ts
 try {
-  const res = await client.get("/users/123");
+  const res = await client.get("/user/123");
   return res.data;
 } catch (err: any) {
   if (err.response) {
@@ -306,7 +306,7 @@ interface User {
   id: string;
   name: string;
 }
-const res = await client.get<User>("/users/123");
+const res = await client.get<User>("/user/123");
 const user = res.data; // typed as User
 ```
 
