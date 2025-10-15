@@ -1,16 +1,20 @@
-A prominent logo at the top helps identify the project quickly; add linked logo image.
+[p align="center"]
+<a href="https://efihub.morefurniture.id">
+<img src="https://efihub.morefurniture.id/img/logo.png" alt="EFIHUB" width="180" />
+</a>
 
-[![EFIHUB Logo](https://efihub.morefurniture.id/img/logo.png)](https://efihub.morefurniture.id)
+  <h1 align="center">EFIHUB JavaScript/TypeScript Client</h1>
 
-# EFIHUB JavaScript/TypeScript Client
+  <p align="center">
+    <em>A modern SDK to integrate with the EFIHUB platform using the OAuth 2.0 Client Credentials flow.</em>
+  </p>
 
-A modern SDK to integrate with the EFIHUB platform using the OAuth 2.0 Client Credentials flow.
+  <p align="center">
+    <a href="https://www.npmjs.com/package/@kacoon/efihub-client"><img src="https://img.shields.io/npm/v/@kacoon/efihub-client.svg?logo=npm" alt="npm version" /></a>
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license" />
+  </p>
 
-- Server-side SDK with automatic token caching and one-time retry on 401
-- Minimal, typed API built on Axios (TypeScript-first)
-- Production defaults for the official EFIHUB endpoints
-
-Learn more: https://efihub.morefurniture.id
+[/p]
 
 ## Description
 
