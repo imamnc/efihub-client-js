@@ -12,6 +12,7 @@
   <p align="center">
     <a href="https://www.npmjs.com/package/@kacoon/efihub-client"><img src="https://img.shields.io/npm/v/@kacoon/efihub-client.svg?logo=npm" alt="npm version" /></a>
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license" />
+    <a href="https://imamnc.com"><img src="https://img.shields.io/badge/author-Imam%20Nc-orange.svg" alt="author" /></a>
   </p>
 </p>
 
