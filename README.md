@@ -1,10 +1,26 @@
 # EFIHUB JavaScript/TypeScript Client
 
-A lightweight SDK to call the EFIHUB API using the OAuth2 Client Credentials flow.
+A modern SDK to integrate with the EFIHUB platform using the OAuth 2.0 Client Credentials flow.
 
-- OAuth2 Client Credentials with automatic token caching and refresh on 401
-- Simple, typed API built on top of Axios
-- Works great with TypeScript or JavaScript
+- Server-side SDK with automatic token caching and one-time retry on 401
+- Minimal, typed API built on Axios (TypeScript-first)
+- Production defaults for the official EFIHUB endpoints
+
+Learn more: https://efihub.morefurniture.id
+
+## Description
+
+EFIHUB is PT EFI’s central integration platform that connects all EFI applications in one unified ecosystem. It provides:
+
+- API Sharing Platform: discoverable, secured APIs across internal apps
+- Central Webhook Hub: real-time notifications with routing, retry, and logging
+- Central Scheduler: task automation, cron jobs, background processes
+- Enterprise Security: OAuth 2.0, JWT, and audit trail
+- Unified Dashboard: observability across APIs, webhooks, schedules, and more
+
+This package, `@kacoon/efihub-client`, is the official JavaScript/TypeScript client for EFIHUB’s REST API. It authenticates via OAuth 2.0 Client Credentials and exposes simple HTTP helpers for GET/POST/PUT/DELETE.
+
+Important: Because Client Credentials requires a client secret, this SDK must be used in trusted, server-side environments only. For web apps (React/Vue/Nuxt/Next), instantiate the client on the server (API routes, server-only modules) and never ship credentials to the browser.
 
 ## Installation
 
@@ -16,7 +32,174 @@ yarn add @kacoon/efihub-client
 pnpm add @kacoon/efihub-client
 ```
 
-> This library uses a client secret to obtain tokens. Use it in server-side environments only—do not expose your credentials in browsers.
+## Usage
+
+Core usage (Node.js/server runtime):
+
+```ts
+import { EfihubClient } from "@kacoon/efihub-client";
+
+const client = new EfihubClient({
+  clientId: process.env.EFIHUB_CLIENT_ID!,
+  clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
+  // Defaults are provided; override only if you run a different EFIHUB endpoint:
+  // tokenUrl?: "https://efihub.morefurniture.id/oauth/token",
+  // apiBaseUrl?: "https://efihub.morefurniture.id/api",
+});
+
+const { data } = await client.get("/users", { params: { page: 1 } });
+console.log(data);
+```
+
+Authentication behavior:
+
+- Access token is fetched via Client Credentials and cached until `expires_in`.
+- If a request returns 401, the client clears the token, refreshes it, and retries once automatically.
+
+Configuration shape (`EfihubClientConfig`):
+
+- `clientId: string`
+- `clientSecret: string`
+- `tokenUrl?: string` (default: `https://efihub.morefurniture.id/oauth/token`)
+- `apiBaseUrl?: string` (default: `https://efihub.morefurniture.id/api`)
+
+TypeScript tip:
+
+```ts
+interface User {
+  id: string;
+  name: string;
+}
+const res = await client.get<User>("/users/123");
+const user = res.data; // typed as User
+```
+
+### Next.js
+
+Do not use this SDK in client components. Keep credentials on the server.
+
+App Router (app/api/users/route.ts):
+
+```ts
+import { NextResponse } from "next/server";
+import { EfihubClient } from "@kacoon/efihub-client";
+
+export async function GET() {
+  const client = new EfihubClient({
+    clientId: process.env.EFIHUB_CLIENT_ID!,
+    clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
+  });
+  const res = await client.get("/users", { params: { page: 1 } });
+  return NextResponse.json(res.data);
+}
+```
+
+Pages Router (pages/api/users.ts):
+
+```ts
+import type { NextApiRequest, NextApiResponse } from "next";
+import { EfihubClient } from "@kacoon/efihub-client";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const client = new EfihubClient({
+    clientId: process.env.EFIHUB_CLIENT_ID!,
+    clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
+  });
+  const out = await client.get("/users");
+  res.status(200).json(out.data);
+}
+```
+
+### Nuxt 3
+
+Create a server API route. Do not call the SDK directly from Vue components.
+
+server/api/users.get.ts:
+
+```ts
+import { EfihubClient } from "@kacoon/efihub-client";
+
+export default defineEventHandler(async () => {
+  const client = new EfihubClient({
+    clientId: process.env.EFIHUB_CLIENT_ID!,
+    clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
+  });
+  const res = await client.get("/users");
+  return res.data;
+});
+```
+
+### React (CRA/Vite) and Vue (Vite)
+
+Do not bundle this SDK in the browser. Instead, call your own backend endpoint:
+
+```ts
+// React/Vue component (browser)
+const resp = await fetch("/api/users");
+const users = await resp.json();
+```
+
+On your backend (Node/Express, Next.js API route, Nuxt server route), use `EfihubClient` as shown above to fetch from EFIHUB and return JSON to your SPA.
+
+## Development
+
+Local scripts:
+
+- Build: `npm run build`
+- Test: `npm test` (Vitest)
+
+Versioning (SemVer):
+
+```bash
+# Choose one: patch | minor | major
+npm version patch -m "chore(release): %s"
+```
+
+Push to repository (includes tags created by `npm version`):
+
+```bash
+git push origin main --follow-tags
+```
+
+Publish to npm:
+
+```bash
+# Ensure you are logged in and have publish rights
+npm login
+
+# Publish as public package
+npm publish --access public
+```
+
+NPM package: https://www.npmjs.com/package/@kacoon/efihub-client
+
+Release checklist:
+
+- [ ] Update changelog/README if needed
+- [ ] `npm run build` passes
+- [ ] `npm version <type>` and push tags
+- [ ] `npm publish --access public`
+
+## Author
+
+Imam Nurcholis (https://github.com/imamnc)
+
+EFIHUB website: https://efihub.morefurniture.id
+
+## Installation
+
+```bash
+npm install @kacoon/efihub-client
+# or
+yarn add @kacoon/efihub-client
+# or
+pnpm add @kacoon/efihub-client
+```
+
+Important: Because Client Credentials requires a client secret, this SDK must be used in trusted, server-side environments only. For web apps (React/Vue/Nuxt/Next), instantiate the client on the server (API routes, server-only modules) and never ship credentials to the browser.
 
 ## Quick start
 
@@ -43,18 +226,20 @@ A runnable example is available in `example/usage.ts`.
 
 `EfihubClientConfig`:
 
-- `clientId: string` – OAuth2 Client ID
-- `clientSecret: string` – OAuth2 Client Secret
-- `tokenUrl?: string` – OAuth2 token endpoint (default: `https://efihub.morefurniture.id/oauth/token`)
-- `apiBaseUrl?: string` – Base URL for EFIHUB API requests (default: `https://efihub.morefurniture.id/api`)
+- `clientId: string`
+- `clientSecret: string`
+- `tokenUrl?: string` (default: `https://efihub.morefurniture.id/oauth/token`)
+- `apiBaseUrl?: string` (default: `https://efihub.morefurniture.id/api`)
 
 ## API
 
 ### `new EfihubClient(config: EfihubClientConfig)`
+
 Creates a client instance. Internally it maintains an access token and reuses it until expiry.
 
 ### HTTP methods
-All methods return a `Promise<AxiosResponse<T>>` (default `T = any`). You can pass any `AxiosRequestConfig` as the last argument.
+
+- All methods return a `Promise<AxiosResponse<T>>` (default `T = any`). You can pass any `AxiosRequestConfig` as the last argument.
 
 - `get<T>(url: string, options?: AxiosRequestConfig)`
 - `post<T>(url: string, data: any, options?: AxiosRequestConfig)`
@@ -79,8 +264,8 @@ await client.get("/reports", {
 
 ## Authentication behavior
 
-- The client fetches an access token using the Client Credentials flow and caches it until `expires_in`.
-- If a request fails with `401 Unauthorized`, the client will clear the cached token, obtain a new one, and retry the request once automatically.
+- Access token is fetched via Client Credentials and cached until `expires_in`.
+- If a request returns 401, the client clears the token, refreshes it, and retries once automatically.
 
 ## Error handling
 
@@ -109,13 +294,17 @@ Types are included:
 You can also specify response types:
 
 ```ts
-interface User { id: string; name: string }
+interface User {
+  id: string;
+  name: string;
+}
 const res = await client.get<User>("/users/123");
 const user = res.data; // typed as User
 ```
 
 ## Development
 
+- Local scripts:
 - Build: `npm run build`
 - Test: `npm test` (Vitest)
 
@@ -133,3 +322,5 @@ Project structure:
 ## License
 
 MIT © Imam Nurcholis
+
+EFIHUB website: https://efihub.morefurniture.id
