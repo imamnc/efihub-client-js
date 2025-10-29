@@ -1,11 +1,15 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { EfihubClientConfig } from "./types";
+import { StorageClient } from "./modules/StorageClient";
+import { SocketClient } from "./modules/SocketClient";
 
 export class EfihubClient {
   private config: Required<EfihubClientConfig>;
   private http: AxiosInstance;
   private accessToken: string | null = null;
   private tokenExpiry: number | null = null;
+  private _storage?: StorageClient;
+  private _socket?: SocketClient;
 
   constructor(config: EfihubClientConfig) {
     const defaultTokenUrl = "https://efihub.morefurniture.id/oauth/token";
@@ -39,7 +43,12 @@ export class EfihubClient {
     return this.accessToken!;
   }
 
-  private async request<T = any>(method: string, url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  private async request<T = any>(
+    method: string,
+    url: string,
+    data?: any,
+    options?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     const token = await this.getAccessToken();
 
     try {
@@ -80,5 +89,17 @@ export class EfihubClient {
 
   public delete<T = any>(url: string, options?: AxiosRequestConfig) {
     return this.request<T>("DELETE", url, undefined, options);
+  }
+
+  /** Storage module: helpers to upload and manage files */
+  public storage(): StorageClient {
+    if (!this._storage) this._storage = new StorageClient(this);
+    return this._storage;
+  }
+
+  /** Websocket module: dispatch events to channels */
+  public socket(): SocketClient {
+    if (!this._socket) this._socket = new SocketClient(this);
+    return this._socket;
   }
 }

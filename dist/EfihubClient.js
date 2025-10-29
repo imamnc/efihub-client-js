@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EfihubClient = void 0;
 const axios_1 = __importDefault(require("axios"));
+const StorageClient_1 = require("./modules/StorageClient");
+const SocketClient_1 = require("./modules/SocketClient");
 class EfihubClient {
     constructor(config) {
         this.accessToken = null;
@@ -72,6 +74,18 @@ class EfihubClient {
     }
     delete(url, options) {
         return this.request("DELETE", url, undefined, options);
+    }
+    /** Storage module: helpers to upload and manage files */
+    storage() {
+        if (!this._storage)
+            this._storage = new StorageClient_1.StorageClient(this);
+        return this._storage;
+    }
+    /** Websocket module: dispatch events to channels */
+    socket() {
+        if (!this._socket)
+            this._socket = new SocketClient_1.SocketClient(this);
+        return this._socket;
     }
 }
 exports.EfihubClient = EfihubClient;

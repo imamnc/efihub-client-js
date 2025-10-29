@@ -1,2 +1,4 @@
 export { EfihubClient } from "./EfihubClient";
-export type { EfihubClientConfig } from "./types";
+export { StorageClient } from "./modules/StorageClient";
+export { SocketClient } from "./modules/SocketClient";
+export type { EfihubClientConfig, StorageUploadInput } from "./types";
