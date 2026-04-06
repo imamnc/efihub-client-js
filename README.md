@@ -6,7 +6,7 @@
   <h1 align="center">EFIHUB JavaScript/TypeScript Client</h1>
 
   <p align="center">
-    <em>Node.js SDK for EFIHUB — OAuth 2.0 Client Credentials, fully aligned with the Laravel package API.</em>
+    <em>Node.js SDK for EFIHUB — Feeling easy to integrate.</em>
   </p>
 
   <p align="center">
@@ -22,11 +22,11 @@
 
 EFIHUB client for Node.js / TypeScript that authenticates via OAuth 2.0 Client Credentials and exposes:
 
-- **HTTP client** — GET / POST / PUT / DELETE / `postMultipart`, with automatic token caching and retry on 401
+- **HTTP client** — GET / POST / PUT / DELETE / `postMultipart`, with refresh token handling
 - **Storage module** — upload files and manage them on EFIHUB storage
 - **WebSocket module** — dispatch real-time events to channels
 - **SSO module** — generate an authorization URL and fetch user profile after callback
-- **WhatsApp module** — manage agents, send messages/attachments to individuals and groups, retrieve messages
+- **WhatsApp module** — manage agents, send messages, retrieve messages
 
 > **Server-side only.** Never expose your `clientSecret` in a browser or public environment.
 
@@ -66,8 +66,6 @@ pnpm add @kacoon/efihub-client
 ```bash
 EFIHUB_CLIENT_ID=your_client_id
 EFIHUB_CLIENT_SECRET=your_client_secret
-EFIHUB_TOKEN_URL=https://efihub.morefurniture.id/oauth/token   # optional
-EFIHUB_API_URL=https://efihub.morefurniture.id/api             # optional
 ```
 
 ---
@@ -200,12 +198,10 @@ Dispatch real-time events to channels from a server-side listener or job.
 
 ```ts
 // Flat-arg style (matches Laravel API)
-const ok = await efihub
-  .socket()
-  .dispatch("orders:updates", "OrderUpdated", {
-    order_id: 123,
-    status: "updated",
-  });
+const ok = await efihub.socket().dispatch("orders:updates", "OrderUpdated", {
+  order_id: 123,
+  status: "updated",
+});
 
 // Object style
 const ok = await efihub.socket().dispatch({
