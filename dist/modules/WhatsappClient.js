@@ -138,7 +138,9 @@ class WhatsappClient {
     async sendAttachment(sender, to, message, attachment, ref_id, ref_url) {
         try {
             const form = this.buildAttachmentForm({ sender, to: normalizePhone(to), message, ref_id, ref_url }, attachment);
-            const resp = await this.base.post("/whatsapp/message/attachment", form, { headers: form.getHeaders() });
+            const resp = await this.base.post("/whatsapp/message/attachment", form, {
+                headers: form.getHeaders(),
+            });
             return resp.status >= 200 && resp.status < 300;
         }
         catch {

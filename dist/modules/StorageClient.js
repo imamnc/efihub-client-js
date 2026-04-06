@@ -55,7 +55,9 @@ class StorageClient {
     /** Check whether a file exists at the given path. Returns true/false. */
     async exists(filePath) {
         try {
-            const resp = await this.base.get("/storage/exists", { params: { path: filePath } });
+            const resp = await this.base.get("/storage/exists", {
+                params: { path: filePath },
+            });
             return resp.data?.data?.exists ?? resp.data?.exists ?? false;
         }
         catch {
@@ -65,7 +67,9 @@ class StorageClient {
     /** Get file size in bytes, or null on failure. */
     async size(filePath) {
         try {
-            const resp = await this.base.get("/storage/size", { params: { path: filePath } });
+            const resp = await this.base.get("/storage/size", {
+                params: { path: filePath },
+            });
             return resp.data?.data?.size ?? resp.data?.size ?? null;
         }
         catch {
@@ -75,8 +79,12 @@ class StorageClient {
     /** Delete a file at the given path. Returns true on success. */
     async delete(filePath) {
         try {
-            const resp = await this.base.delete("/storage/delete", { data: { path: filePath } });
-            return resp.data?.data?.deleted ?? resp.data?.deleted ?? (resp.status >= 200 && resp.status < 300);
+            const resp = await this.base.delete("/storage/delete", {
+                data: { path: filePath },
+            });
+            return (resp.data?.data?.deleted ??
+                resp.data?.deleted ??
+                (resp.status >= 200 && resp.status < 300));
         }
         catch {
             return false;
