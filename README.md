@@ -84,8 +84,6 @@ import { EfihubClient } from "@kacoon/efihub-client";
 const efihub = new EfihubClient({
   clientId: process.env.EFIHUB_CLIENT_ID!,
   clientSecret: process.env.EFIHUB_CLIENT_SECRET!,
-  tokenUrl: process.env.EFIHUB_TOKEN_URL, // optional
-  apiBaseUrl: process.env.EFIHUB_API_URL, // optional
 });
 ```
 
