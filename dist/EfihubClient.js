@@ -5,8 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EfihubClient = void 0;
 const axios_1 = __importDefault(require("axios"));
+const form_data_1 = __importDefault(require("form-data"));
+const node_fs_1 = __importDefault(require("node:fs"));
+const node_path_1 = __importDefault(require("node:path"));
 const StorageClient_1 = require("./modules/StorageClient");
 const SocketClient_1 = require("./modules/SocketClient");
+const SSOClient_1 = require("./modules/SSOClient");
+const WhatsappClient_1 = require("./modules/WhatsappClient");
 class EfihubClient {
     constructor(config) {
         this.accessToken = null;
@@ -75,6 +80,24 @@ class EfihubClient {
     delete(url, options) {
         return this.request("DELETE", url, undefined, options);
     }
+    /**
+     * POST multipart/form-data with optional file attachments.
+     * - fields: plain key-value pairs appended as form fields
+     * - files: map of field name to local file path
+     */
+    async postMultipart(url, fields = {}, files = {}, options) {
+        const form = new form_data_1.default();
+        for (const [key, value] of Object.entries(fields)) {
+            form.append(key, String(value));
+        }
+        for (const [field, filePath] of Object.entries(files)) {
+            form.append(field, node_fs_1.default.createReadStream(filePath), node_path_1.default.basename(filePath));
+        }
+        return this.request("POST", url, form, {
+            headers: form.getHeaders(),
+            ...options,
+        });
+    }
     /** Storage module: helpers to upload and manage files */
     storage() {
         if (!this._storage)
@@ -86,6 +109,18 @@ class EfihubClient {
         if (!this._socket)
             this._socket = new SocketClient_1.SocketClient(this);
         return this._socket;
+    }
+    /** SSO module: generate authorization URL and fetch user profile */
+    sso() {
+        if (!this._sso)
+            this._sso = new SSOClient_1.SSOClient(this);
+        return this._sso;
+    }
+    /** WhatsApp module: manage agents and send messages */
+    whatsapp() {
+        if (!this._whatsapp)
+            this._whatsapp = new WhatsappClient_1.WhatsappClient(this);
+        return this._whatsapp;
     }
 }
 exports.EfihubClient = EfihubClient;

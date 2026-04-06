@@ -10,3 +10,13 @@ export interface EfihubClientConfig {
 // Storage
 import type { Readable } from "node:stream";
 export type StorageUploadInput = string | Buffer | Readable;
+
+// WhatsApp
+export type AttachmentSpec =
+  | string
+  | { path: string; filename?: string; headers?: Record<string, string> }
+  | {
+      contents: Buffer | string;
+      filename: string;
+      headers?: Record<string, string>;
+    };

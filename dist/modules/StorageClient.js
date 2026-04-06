@@ -14,9 +14,10 @@ class StorageClient {
     /**
      * Upload a file to EFIHUB storage.
      * - input: string file path | Buffer | Readable stream
-     * - destPath: folder or full path; if ends with '/', server may generate filename
+     * - destPath: destination folder or full path; end with '/' to let the server auto-generate the filename
+     * Returns the public URL string, or false on failure.
      */
-    async upload(destPath, input, filename) {
+    async upload(input, destPath, filename) {
         const form = new form_data_1.default();
         form.append("path", destPath);
         if (typeof input === "string") {
@@ -34,29 +35,52 @@ class StorageClient {
             const name = filename ?? "upload.bin";
             form.append("file", input, name);
         }
-        const headers = form.getHeaders();
-        const resp = await this.base.post("/storage/upload", form, { headers });
-        const uploadedPath = resp.data?.data?.path ?? resp.data?.path;
-        if (!uploadedPath)
-            return null;
-        const urlResp = await this.url(uploadedPath);
-        return urlResp.data?.url ?? null;
+        try {
+            const headers = form.getHeaders();
+            const resp = await this.base.post("/storage/upload", form, { headers });
+            const uploadedPath = resp.data?.data?.path ?? resp.data?.path;
+            if (!uploadedPath)
+                return false;
+            const urlResp = await this.url(uploadedPath);
+            return urlResp.data?.data?.url ?? urlResp.data?.url ?? false;
+        }
+        catch {
+            return false;
+        }
     }
     /** Get a public URL for a stored path */
     url(filePath) {
         return this.base.get("/storage/url", { params: { path: filePath } });
     }
-    /** Check if a path exists */
-    exists(filePath) {
-        return this.base.get("/storage/exists", { params: { path: filePath } });
+    /** Check whether a file exists at the given path. Returns true/false. */
+    async exists(filePath) {
+        try {
+            const resp = await this.base.get("/storage/exists", { params: { path: filePath } });
+            return resp.data?.data?.exists ?? resp.data?.exists ?? false;
+        }
+        catch {
+            return false;
+        }
     }
-    /** Get size in bytes for a path */
-    size(filePath) {
-        return this.base.get("/storage/size", { params: { path: filePath } });
+    /** Get file size in bytes, or null on failure. */
+    async size(filePath) {
+        try {
+            const resp = await this.base.get("/storage/size", { params: { path: filePath } });
+            return resp.data?.data?.size ?? resp.data?.size ?? null;
+        }
+        catch {
+            return null;
+        }
     }
-    /** Delete a path */
-    delete(filePath) {
-        return this.base.delete("/storage/delete", { data: { path: filePath } });
+    /** Delete a file at the given path. Returns true on success. */
+    async delete(filePath) {
+        try {
+            const resp = await this.base.delete("/storage/delete", { data: { path: filePath } });
+            return resp.data?.data?.deleted ?? resp.data?.deleted ?? (resp.status >= 200 && resp.status < 300);
+        }
+        catch {
+            return false;
+        }
     }
 }
 exports.StorageClient = StorageClient;

@@ -7,23 +7,16 @@ export declare class StorageClient {
     /**
      * Upload a file to EFIHUB storage.
      * - input: string file path | Buffer | Readable stream
-     * - destPath: folder or full path; if ends with '/', server may generate filename
+     * - destPath: destination folder or full path; end with '/' to let the server auto-generate the filename
+     * Returns the public URL string, or false on failure.
      */
-    upload(destPath: string, input: StorageUploadInput, filename?: string): Promise<string | null>;
+    upload(input: StorageUploadInput, destPath: string, filename?: string): Promise<string | false>;
     /** Get a public URL for a stored path */
-    url(filePath: string): Promise<AxiosResponse<{
-        url: string;
-    }>>;
-    /** Check if a path exists */
-    exists(filePath: string): Promise<AxiosResponse<{
-        exists: boolean;
-    }>>;
-    /** Get size in bytes for a path */
-    size(filePath: string): Promise<AxiosResponse<{
-        size: number | null;
-    }>>;
-    /** Delete a path */
-    delete(filePath: string): Promise<AxiosResponse<{
-        deleted: boolean;
-    }>>;
+    url(filePath: string): Promise<AxiosResponse<any>>;
+    /** Check whether a file exists at the given path. Returns true/false. */
+    exists(filePath: string): Promise<boolean>;
+    /** Get file size in bytes, or null on failure. */
+    size(filePath: string): Promise<number | null>;
+    /** Delete a file at the given path. Returns true on success. */
+    delete(filePath: string): Promise<boolean>;
 }

@@ -1,7 +1,12 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import FormData from "form-data";
+import fs from "node:fs";
+import path from "node:path";
 import { EfihubClientConfig } from "./types";
 import { StorageClient } from "./modules/StorageClient";
 import { SocketClient } from "./modules/SocketClient";
+import { SSOClient } from "./modules/SSOClient";
+import { WhatsappClient } from "./modules/WhatsappClient";
 
 export class EfihubClient {
   private config: Required<EfihubClientConfig>;
@@ -10,6 +15,8 @@ export class EfihubClient {
   private tokenExpiry: number | null = null;
   private _storage?: StorageClient;
   private _socket?: SocketClient;
+  private _sso?: SSOClient;
+  private _whatsapp?: WhatsappClient;
 
   constructor(config: EfihubClientConfig) {
     const defaultTokenUrl = "https://efihub.morefurniture.id/oauth/token";
@@ -47,7 +54,7 @@ export class EfihubClient {
     method: string,
     url: string,
     data?: any,
-    options?: AxiosRequestConfig
+    options?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
     const token = await this.getAccessToken();
 
@@ -91,6 +98,34 @@ export class EfihubClient {
     return this.request<T>("DELETE", url, undefined, options);
   }
 
+  /**
+   * POST multipart/form-data with optional file attachments.
+   * - fields: plain key-value pairs appended as form fields
+   * - files: map of field name to local file path
+   */
+  public async postMultipart<T = any>(
+    url: string,
+    fields: Record<string, string | number | boolean> = {},
+    files: Record<string, string> = {},
+    options?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    const form = new FormData();
+    for (const [key, value] of Object.entries(fields)) {
+      form.append(key, String(value));
+    }
+    for (const [field, filePath] of Object.entries(files)) {
+      form.append(
+        field,
+        fs.createReadStream(filePath),
+        path.basename(filePath),
+      );
+    }
+    return this.request<T>("POST", url, form, {
+      headers: form.getHeaders(),
+      ...options,
+    });
+  }
+
   /** Storage module: helpers to upload and manage files */
   public storage(): StorageClient {
     if (!this._storage) this._storage = new StorageClient(this);
@@ -101,5 +136,17 @@ export class EfihubClient {
   public socket(): SocketClient {
     if (!this._socket) this._socket = new SocketClient(this);
     return this._socket;
+  }
+
+  /** SSO module: generate authorization URL and fetch user profile */
+  public sso(): SSOClient {
+    if (!this._sso) this._sso = new SSOClient(this);
+    return this._sso;
+  }
+
+  /** WhatsApp module: manage agents and send messages */
+  public whatsapp(): WhatsappClient {
+    if (!this._whatsapp) this._whatsapp = new WhatsappClient(this);
+    return this._whatsapp;
   }
 }

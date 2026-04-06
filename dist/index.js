@@ -1,9 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SocketClient = exports.StorageClient = exports.EfihubClient = void 0;
+exports.WhatsappClient = exports.SSOClient = exports.SocketClient = exports.StorageClient = exports.EfihubClient = void 0;
 var EfihubClient_1 = require("./EfihubClient");
 Object.defineProperty(exports, "EfihubClient", { enumerable: true, get: function () { return EfihubClient_1.EfihubClient; } });
 var StorageClient_1 = require("./modules/StorageClient");
 Object.defineProperty(exports, "StorageClient", { enumerable: true, get: function () { return StorageClient_1.StorageClient; } });
 var SocketClient_1 = require("./modules/SocketClient");
 Object.defineProperty(exports, "SocketClient", { enumerable: true, get: function () { return SocketClient_1.SocketClient; } });
+var SSOClient_1 = require("./modules/SSOClient");
+Object.defineProperty(exports, "SSOClient", { enumerable: true, get: function () { return SSOClient_1.SSOClient; } });
+var WhatsappClient_1 = require("./modules/WhatsappClient");
+Object.defineProperty(exports, "WhatsappClient", { enumerable: true, get: function () { return WhatsappClient_1.WhatsappClient; } });
